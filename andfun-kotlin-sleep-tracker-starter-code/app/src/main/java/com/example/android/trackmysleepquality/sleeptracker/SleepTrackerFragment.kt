@@ -20,10 +20,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.android.trackmysleepquality.R
 import com.example.android.trackmysleepquality.database.SleepDatabase
 import com.example.android.trackmysleepquality.databinding.FragmentSleepTrackerBinding
@@ -62,8 +63,13 @@ class SleepTrackerFragment : Fragment() {
 
         binding.sleepTrackerViewModel = viewModel
 
+        binding.lifecycleOwner = this
+
+        val adapter = SleepNightAdapter()
+        binding.sleepMyList.adapter = adapter
+
         with(viewModel) {
-            navigateToQuality.observe(viewLifecycleOwner, Observer {
+            navigateToQuality.observe(viewLifecycleOwner) {
                 it?.let {
                     findNavController().navigate(
                         SleepTrackerFragmentDirections.actionSleepTrackerFragmentToSleepQualityFragment(
@@ -72,16 +78,20 @@ class SleepTrackerFragment : Fragment() {
                     )
                     doneNavigating()
                 }
-            })
-        }
+            }
 
-        binding.lifecycleOwner = this
+            nights.observe(viewLifecycleOwner) {
+                it?.let {
+                    adapter.data = it
+                }
+            }
+        }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with(viewModel){
+        with(viewModel) {
             showSnakeBarEvent.observe(viewLifecycleOwner) {
                 if (it) {
                     Snackbar.make(
