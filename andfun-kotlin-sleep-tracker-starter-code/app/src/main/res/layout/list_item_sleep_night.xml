@@ -31,7 +31,7 @@
         tools:text="Wednesday" />
 
     <TextView
-        android:id="@+id/quality_string"
+        android:id="@+id/qualityString"
         android:layout_width="0dp"
         android:layout_height="20dp"
         android:layout_marginTop="8dp"
