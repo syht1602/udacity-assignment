@@ -1,35 +1,29 @@
 package com.example.android.trackmysleepquality.sleeptracker
 
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import com.example.android.trackmysleepquality.R
 import com.example.android.trackmysleepquality.convertDurationToFormatted
 import com.example.android.trackmysleepquality.convertNumericQualityToString
 import com.example.android.trackmysleepquality.database.SleepNight
+import com.example.android.trackmysleepquality.databinding.ListItemSleepNightBinding
 
-class SleepNightAdapter : BaseAdapter<SleepNight, SleepNightAdapter.SleepNightViewHolder>() {
-    override fun setLayoutId() = R.layout.list_item_sleep_night
+class SleepNightAdapter :
+    BaseAdapter<SleepNight, ListItemSleepNightBinding, SleepNightAdapter.SleepNightViewHolder>(
+        SleepNightDiffCallback()
+    ) {
+    override fun getLayoutId() = R.layout.list_item_sleep_night
+    override fun getViewViewHolder(binding: ListItemSleepNightBinding) =
+        SleepNightViewHolder(binding)
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): SleepNightViewHolder {
-        return SleepNightViewHolder(inflateLayout(parent))
-    }
-
-    class SleepNightViewHolder(view: View) : BaseViewHolder<SleepNight>(view) {
-        private val qualityImage: ImageView = view.findViewById(R.id.qualityImage)
-        private val sleepLength: TextView = view.findViewById(R.id.sleepLength)
-        private val qualityString: TextView = view.findViewById(R.id.qualityString)
-        private val resource = view.context.resources
+    class SleepNightViewHolder(private val binding: ListItemSleepNightBinding) :
+        BaseViewHolder<SleepNight, ListItemSleepNightBinding>(binding) {
         override fun bind(item: SleepNight) {
-            sleepLength.text =
+            val resource = binding.root.context.resources
+            binding.sleepLength.text =
                 convertDurationToFormatted(item.startTimeMilli, item.endTimeMilli, resource)
-            qualityString.text =
+            binding.qualityString.text =
                 convertNumericQualityToString(item.sleepQuality, resource)
-            qualityImage.setImageResource(
+            binding.qualityImage.setImageResource(
                 when (item.sleepQuality) {
                     0 -> R.drawable.ic_sleep_0
                     1 -> R.drawable.ic_sleep_1
@@ -41,5 +35,14 @@ class SleepNightAdapter : BaseAdapter<SleepNight, SleepNightAdapter.SleepNightVi
                 }
             )
         }
+    }
+
+    class SleepNightDiffCallback : DiffUtil.ItemCallback<SleepNight>() {
+        override fun areItemsTheSame(oldItem: SleepNight, newItem: SleepNight) =
+            oldItem.nightID == newItem.nightID
+
+        override fun areContentsTheSame(oldItem: SleepNight, newItem: SleepNight) =
+            oldItem == newItem
+
     }
 }
