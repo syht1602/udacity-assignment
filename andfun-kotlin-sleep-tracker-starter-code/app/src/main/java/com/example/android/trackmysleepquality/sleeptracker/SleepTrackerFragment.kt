@@ -20,11 +20,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import com.example.android.trackmysleepquality.R
 import com.example.android.trackmysleepquality.database.SleepDatabase
 import com.example.android.trackmysleepquality.databinding.FragmentSleepTrackerBinding
@@ -65,7 +65,12 @@ class SleepTrackerFragment : Fragment() {
 
         binding.lifecycleOwner = this
 
-        val adapter = SleepNightAdapter()
+        val manager = GridLayoutManager(requireActivity(), 3)
+        binding.sleepMyList.layoutManager = manager
+
+        val adapter = SleepNightAdapter(SleepNightClickListener {
+            Toast.makeText(requireContext(), "Id : $it", Toast.LENGTH_SHORT).show()
+        })
         binding.sleepMyList.adapter = adapter
 
         with(viewModel) {
@@ -83,6 +88,17 @@ class SleepTrackerFragment : Fragment() {
             nights.observe(viewLifecycleOwner) {
                 it?.let {
                     adapter.submitList(it)
+                }
+            }
+
+            navigateToSleepDataQuality.observe(viewLifecycleOwner) {
+                it?.let {
+                    findNavController().navigate(
+                        SleepTrackerFragmentDirections.actionSleepTrackerFragmentToSleepQualityFragment(
+                            it
+                        )
+                    )
+                    onSleepNavigated()
                 }
             }
         }

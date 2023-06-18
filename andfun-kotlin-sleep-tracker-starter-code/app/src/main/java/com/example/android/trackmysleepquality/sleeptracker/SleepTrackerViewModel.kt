@@ -38,6 +38,12 @@ class SleepTrackerViewModel(val database: SleepDatabaseDao, application: Applica
     var nightString = Transformations.map(nights) {
         formatNights(nights = it, application.resources)
     }
+
+    private val _navigateToSleepDataQuality = MutableLiveData<Long?>()
+
+    val navigateToSleepDataQuality: LiveData<Long?>
+        get() = _navigateToSleepDataQuality
+
     private val _navigateToQuality = MutableLiveData<SleepNight?>()
     val navigateToQuality: LiveData<SleepNight?>
         get() = _navigateToQuality
@@ -113,5 +119,13 @@ class SleepTrackerViewModel(val database: SleepDatabaseDao, application: Applica
 
     fun doneNavigating() {
         _navigateToQuality.value = null
+    }
+
+    fun onSleepNightClicked(nightId: Long) {
+        _navigateToSleepDataQuality.value = nightId
+    }
+
+    fun onSleepNavigated() {
+        _navigateToSleepDataQuality.value = null
     }
 }
