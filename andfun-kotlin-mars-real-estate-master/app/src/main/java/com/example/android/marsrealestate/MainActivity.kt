@@ -12,26 +12,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package com.example.android.trackmysleepquality.database
+package com.example.android.marsrealestate
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 
-@Entity(tableName = "daily_sleep_quality_table")
-data class SleepNight(
+class MainActivity : AppCompatActivity() {
 
-    @PrimaryKey(autoGenerate = true)
-    var nightID: Long = 0L,
-
-    @ColumnInfo(name = "start_time_milli")
-    val startTimeMilli: Long = System.currentTimeMillis(),
-
-    @ColumnInfo(name = "end_time_milli")
-    var endTimeMilli: Long = startTimeMilli,
-
-    @ColumnInfo(name = "sleep_quality")
-    var sleepQuality: Int = -1,
-)
+    /**
+     * Our MainActivity is only responsible for setting the content view that contains the
+     * Navigation Host.
+     */
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+    }
+}

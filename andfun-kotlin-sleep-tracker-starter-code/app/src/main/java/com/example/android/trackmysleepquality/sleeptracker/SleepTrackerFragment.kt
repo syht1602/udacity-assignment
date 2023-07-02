@@ -25,7 +25,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.android.trackmysleepquality.R
+import com.example.android.trackmysleepquality.bases.BaseAdapter
 import com.example.android.trackmysleepquality.database.SleepDatabase
 import com.example.android.trackmysleepquality.databinding.FragmentSleepTrackerBinding
 import com.google.android.material.snackbar.Snackbar
@@ -45,7 +47,7 @@ class SleepTrackerFragment : Fragment() {
      * This function uses DataBindingUtil to inflate R.layout.fragment_sleep_quality.
      */
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
 
         // Get a reference to the binding object and inflate the fragment views.
@@ -70,7 +72,18 @@ class SleepTrackerFragment : Fragment() {
 
         val adapter = SleepNightAdapter(SleepNightClickListener {
             Toast.makeText(requireContext(), "Id : $it", Toast.LENGTH_SHORT).show()
+            viewModel.onSleepNightClicked(it)
         })
+
+        val header: BaseAdapter.DataItem.Header = BaseAdapter.DataItem.Header("Header")
+        adapter.setHeader(header)
+        manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int) =  when (position) {
+                0 -> 3
+                else -> 1
+            }
+        }
+
         binding.sleepMyList.adapter = adapter
 
         with(viewModel) {
@@ -87,14 +100,14 @@ class SleepTrackerFragment : Fragment() {
 
             nights.observe(viewLifecycleOwner) {
                 it?.let {
-                    adapter.submitList(it)
+                    adapter.addHeaderAndSubmitList(it)
                 }
             }
 
             navigateToSleepDataQuality.observe(viewLifecycleOwner) {
                 it?.let {
                     findNavController().navigate(
-                        SleepTrackerFragmentDirections.actionSleepTrackerFragmentToSleepQualityFragment(
+                        SleepTrackerFragmentDirections.actionSleepTrackerFragmentToSleepDetailFragment(
                             it
                         )
                     )
